@@ -4,7 +4,7 @@ A system to translate Greek Sign Language to text.
 ## Workflows
 
 1. Update config.yaml
-2. Update secrets.yaml [Optional]
+2. Update secrets.yaml [Optional] - We keep secrets and keys here if needed
 3. Update params.yaml
 4. Update the entity
 5. Update the configuration manager in src config
@@ -12,6 +12,7 @@ A system to translate Greek Sign Language to text.
 7. Update the pipeline 
 8. Update the main.py
 9. Update the dvc.yaml
+10. Update app.py
 
 
 # How to run
