@@ -17,5 +17,6 @@ gdown
 dagshub==0.3.27
 torch
 torchvision
+transformers
 opencv-python
 -e .

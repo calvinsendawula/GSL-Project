@@ -5,7 +5,8 @@ from gslTranslater.utils.common import read_yaml, create_directories
 #                                                           PrepareBaseModelConfig, 
 #                                                           TrainingConfig,
 #                                                           EvaluationConfig)
-from gslTranslater.entity.config_entity import (DataIngestionConfig)
+from gslTranslater.entity.config_entity import (DataIngestionConfig,
+                                                PrepareBaseModelConfig)
 
 
 class ConfigurationManager:
@@ -35,3 +36,20 @@ class ConfigurationManager:
 
         return data_ingestion_config
     
+    
+    def get_prepare_base_model_config(self) -> PrepareBaseModelConfig:
+        config = self.config.prepare_base_model
+        create_directories([config.root_dir])
+        prepare_base_model_config = PrepareBaseModelConfig(
+            root_dir=Path(config.root_dir),
+            cnn_model_path=Path(config.cnn_model_path),
+            transformer_model_path=Path(config.transformer_model_path),
+            tokenizer_path=Path(config.tokenizer_path),
+            updated_model_path=Path(config.updated_model_path),
+            params_image_size=self.params.IMAGE_SIZE,
+            params_learning_rate=self.params.LEARNING_RATE,
+            params_include_top=self.params.INCLUDE_TOP,
+            params_weights=self.params.WEIGHTS,
+            params_pooling=self.params.POOLING
+        )
+        return prepare_base_model_config

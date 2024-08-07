@@ -3,7 +3,16 @@ artifacts_root: artifacts
 
 data_ingestion:
   root_dir: artifacts/data_ingestion
-  # source_URL: https://drive.google.com/file/d/1y6uBzFPpSXZWhtVNpvUWKItQ--rGGSgq/view?usp=sharing
-  source_URL: https://drive.google.com/file/d/1vlhZ5c7abUKF8xXERIw6m9Te8fW7ohw3/view?usp=sharing
+  # source_URL: https://drive.google.com/file/d/1y6uBzFPpSXZWhtVNpvUWKItQ--rGGSgq/view?usp=sharing GSL Superset
+  # source_URL: https://drive.google.com/file/d/1vlhZ5c7abUKF8xXERIw6m9Te8fW7ohw3/view?usp=sharing KClassfier
+  source_URL: https://drive.google.com/file/d/1WILXp60jYb70wby_vBp-giuzLUaZt-h-/view?usp=sharing # GSL Subset
   local_data_file: artifacts/data_ingestion/data.zip
   unzip_dir: artifacts/data_ingestion
+
+prepare_base_model:
+  root_dir: artifacts/prepare_base_model
+  cnn_model_path: artifacts/prepare_base_model/cnn_model.h5
+  transformer_model_path: artifacts/prepare_base_model/transformer_model
+  tokenizer_path: artifacts/prepare_base_model/tokenizer
+  updated_model_path: artifacts/prepare_base_model/base_model_updated.h5
+  
