@@ -4,6 +4,7 @@ from torchvision import models
 from transformers import BertTokenizer, BertModel
 from gslTranslater.constants import *
 from gslTranslater.entity.config_entity import PrepareBaseModelConfig
+from gslTranslater.components.sign_language_translator import SignLanguageTranslator
 
 class PrepareBaseModel:
     def __init__(self, config: PrepareBaseModelConfig):
@@ -25,28 +26,7 @@ class PrepareBaseModel:
         self.cnn_model.load_state_dict(torch.load(self.config.cnn_model_path))
         self.transformer_model.load_state_dict(torch.load(self.config.transformer_model_path))
 
-        # Define the full model combining both models
-        class SignLanguageTranslator(nn.Module):
-            def __init__(self, cnn_model, transformer_model):
-                super(SignLanguageTranslator, self).__init__()
-                self.cnn_model = cnn_model
-                self.fc = nn.Linear(2048, 512)
-                self.transformer_model = transformer_model
-                self.classifier = nn.Linear(512 + transformer_model.config.hidden_size, len(self.tokenizer))
-
-            def forward(self, features, input_ids, attention_mask):
-                features = self.cnn_model(features)
-                features = features.view(features.size(0), -1)
-                features = torch.relu(self.fc(features))
-
-                bert_outputs = self.transformer_model(input_ids=input_ids, attention_mask=attention_mask)
-                bert_cls = bert_outputs.last_hidden_state[:, 0, :]
-
-                combined = torch.cat((features, bert_cls), dim=1)
-                outputs = self.classifier(combined)
-                return outputs
-
-        self.full_model = SignLanguageTranslator(self.cnn_model, self.transformer_model)
+        self.full_model = SignLanguageTranslator(self.cnn_model, self.transformer_model, tokenizer_len=len(self.tokenizer))
         self.print_model_summary(self.full_model)
         self.save_model(self.full_model, self.config.updated_model_path)
     
