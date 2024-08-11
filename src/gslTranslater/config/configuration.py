@@ -1,13 +1,10 @@
 from gslTranslater.constants import *
 import os
 from gslTranslater.utils.common import read_yaml, create_directories
-# from gslTranslater.entity.config_entity import (DataIngestionConfig, 
-#                                                           PrepareBaseModelConfig, 
-#                                                           TrainingConfig,
-#                                                           EvaluationConfig)
 from gslTranslater.entity.config_entity import (DataIngestionConfig,
                                                 PrepareBaseModelConfig,
-                                                TrainingConfig)
+                                                TrainingConfig,
+                                                EvaluationConfig)
 
 
 class ConfigurationManager:
@@ -69,3 +66,15 @@ class ConfigurationManager:
         )
 
         return training_config
+    
+    
+    def get_evaluation_config(self) -> EvaluationConfig:
+        eval_config = EvaluationConfig(
+            path_of_model=self.config.training.trained_model_path,
+            testing_data_dir=self.config.training.testing_data_dir,
+            mlflow_uri=self.config.evaluation.mlflow_uri,
+            all_params=self.params,
+            params_image_size=self.params.IMAGE_SIZE,
+            params_batch_size=self.params.BATCH_SIZE
+        )
+        return eval_config
