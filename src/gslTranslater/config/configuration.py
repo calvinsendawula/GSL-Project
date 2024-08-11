@@ -45,11 +45,6 @@ class ConfigurationManager:
             cnn_model_path=Path(config.cnn_model_path),
             transformer_model_path=Path(config.transformer_model_path),
             tokenizer_path=Path(config.tokenizer_path),
-            updated_model_path=Path(config.updated_model_path),
-            params_image_size=self.params.IMAGE_SIZE,
-            params_learning_rate=self.params.LEARNING_RATE,
-            params_include_top=self.params.INCLUDE_TOP,
-            params_weights=self.params.WEIGHTS,
-            params_pooling=self.params.POOLING
+            updated_model_path=Path(config.updated_model_path)
         )
         return prepare_base_model_config

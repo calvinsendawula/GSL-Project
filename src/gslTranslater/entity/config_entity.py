@@ -17,8 +17,3 @@ class PrepareBaseModelConfig:
     transformer_model_path: Path
     tokenizer_path: Path
     updated_model_path: Path
-    params_image_size: list
-    params_learning_rate: float
-    params_include_top: bool
-    params_weights: str
-    params_pooling: str
