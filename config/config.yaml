@@ -20,3 +20,8 @@ training:
   trained_model_path: artifacts/training/model.pth
   training_data_dir: artifacts/data_ingestion/GSL_isolated/Train
   testing_data_dir: artifacts/data_ingestion/GSL_isolated/Test
+
+evaluation:
+  mlflow_uri: replace-with-mlflow-uri
+  # Example of mlflow uri
+  # https://dagshub.com/johndoe/My-Sign-Language-Project.mlflow
