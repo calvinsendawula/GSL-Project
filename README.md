@@ -40,3 +40,6 @@ python -m venv .venv
 ```bash
 pip install -r requirements.txt
 ```
+
+### Note: The project is still in progress, and the final model is currently being trained. 
+Full instructions on how to run the code will be added once the model training is complete.
