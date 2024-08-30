@@ -22,59 +22,93 @@ class ConfigurationManager:
     
     def get_data_ingestion_config(self) -> DataIngestionConfig:
         config = self.config.data_ingestion
+        csv_paths = config.csv_paths
+        plot_paths = config.plot_paths
         
-        create_directories([config.root_dir])
+        # Create necessary directories
+        create_directories([config.root_dir, csv_paths.analysis_dir, plot_paths.root_dir])
         
         data_ingestion_config = DataIngestionConfig(
             root_dir=config.root_dir,
             source_URL=config.source_URL,
             local_data_file=config.tar_dir,
-            unzip_dir=config.unzip_dir
+            unzip_dir=config.unzip_dir,
+            data_dir=Path(config.data_dir),
+            analysis_dir=Path(csv_paths.analysis_dir),
+            merged_csv=Path(csv_paths.merged_csv),
+            confirmed_csv=Path(csv_paths.confirmed_csv),
+            missing_csv=Path(csv_paths.missing_csv),
+            gloss_distribution_csv=Path(csv_paths.gloss_distribution_csv),
+            balanced_csv=Path(csv_paths.balanced_csv),
+            summary_csv=Path(csv_paths.summary_csv),
+            frame_count_csv=Path(csv_paths.frame_count_csv),
+            analysis_txt=Path(csv_paths.analysis_txt),
+            train_csv=Path(config.train_csv),
+            test_csv=Path(config.test_csv),
+            validate_csv=Path(config.validate_csv),
+            plot_dir=Path(plot_paths.root_dir),
+            gloss_distribution_plot=Path(plot_paths.gloss_distribution_plot),
+            max_instances_per_class=self.params.MAX_INSTANCES_PER_CLASS,
+            train_split=self.params.TRAIN_SPLIT,
+            test_split=self.params.TEST_SPLIT,
+            validate_split=self.params.VALIDATE_SPLIT
         )
         
         return data_ingestion_config
     
     
     def get_prepare_base_model_config(self) -> PrepareBaseModelConfig:
-        config = self.config.prepare_base_model
-        create_directories([config.root_dir])
+        prepare_base_model = self.config.prepare_base_model
+        params = self.params
+
         prepare_base_model_config = PrepareBaseModelConfig(
-            root_dir=Path(config.root_dir),
-            cnn_model_path=Path(config.cnn_model_path),
-            transformer_model_path=Path(config.transformer_model_path),
-            tokenizer_path=Path(config.tokenizer_path),
-            updated_model_path=Path(config.updated_model_path)
+            root_dir=Path(prepare_base_model.root_dir),
+            cnn_lstm_model_path=Path(prepare_base_model.cnn_lstm_model_path),
+            params_image_size=params.IMAGE_SIZE,
+            params_weights=params.WEIGHTS,
+            params_classes=params.CLASSES
         )
+
         return prepare_base_model_config
     
     
     def get_training_config(self) -> TrainingConfig:
         training = self.config.training
         prepare_base_model = self.config.prepare_base_model
-        training_data = Path(training.training_data_dir)
-        create_directories([Path(training.root_dir)])
+        data_ingestion = self.config.data_ingestion
+        params = self.params
 
         training_config = TrainingConfig(
             root_dir=Path(training.root_dir),
             trained_model_path=Path(training.trained_model_path),
-            updated_base_model_path=Path(prepare_base_model.updated_model_path),
-            training_data=Path(training_data),
-            params_epochs=self.params.EPOCHS,
-            params_batch_size=self.params.BATCH_SIZE,
-            params_learning_rate=self.params.LEARNING_RATE,
-            params_image_size=self.params.IMAGE_SIZE
+            cnn_lstm_model_path=Path(prepare_base_model.cnn_lstm_model_path),
+            train_csv=Path(data_ingestion.train_csv),
+            validate_csv=Path(data_ingestion.validate_csv),
+            test_csv=Path(data_ingestion.test_csv),
+            data_dir=Path(data_ingestion.data_dir),
+            params_epochs=params.EPOCHS,
+            params_batch_size=params.BATCH_SIZE,
+            params_image_size=params.IMAGE_SIZE,
+            max_seq_length=params.MAX_SEQ_LENGTH,
+            learning_rate=params.LEARNING_RATE,
+            classes=params.CLASSES
         )
 
         return training_config
     
     
     def get_evaluation_config(self) -> EvaluationConfig:
-        eval_config = EvaluationConfig(
-            path_of_model=self.config.training.trained_model_path,
-            testing_data_dir=self.config.training.testing_data_dir,
-            mlflow_uri=self.config.evaluation.mlflow_uri,
-            all_params=self.params,
-            params_image_size=self.params.IMAGE_SIZE,
-            params_batch_size=self.params.BATCH_SIZE
+        evaluation = self.config.evaluation
+        data_ingestion = self.config.data_ingestion
+        return EvaluationConfig(
+            root_dir=Path(data_ingestion.data_dir),
+            path_of_model=Path(self.config.training.trained_model_path),
+            test_csv=Path(data_ingestion.test_csv),
+            mlflow_uri=evaluation.mlflow_uri,
+            dagshub_username=evaluation.dagshub_username,
+            dagshub_repo_name=evaluation.dagshub_repo_name,
+            max_seq_length=self.params.MAX_SEQ_LENGTH,
+            image_size=self.params.IMAGE_SIZE,
+            batch_size=self.params.BATCH_SIZE,
+            all_params=self.params
         )
-        return eval_config

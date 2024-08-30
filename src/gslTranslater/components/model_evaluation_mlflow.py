@@ -1,88 +1,112 @@
+import os
+from dataclasses import dataclass
 from pathlib import Path
 import torch
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms, models
-from transformers import BertModel
-from torchvision import datasets, transforms
+import pandas as pd
+import numpy as np
 import mlflow
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-from nltk.translate.bleu_score import sentence_bleu
+import dagshub
+import tensorflow as tf
+from torch import nn
+from sklearn.preprocessing import LabelEncoder
+from gslTranslater.utils.common import read_yaml, create_directories, save_json
 from gslTranslater.constants import *
 from gslTranslater.entity.config_entity import EvaluationConfig
-from gslTranslater.utils.common import save_json
-from gslTranslater.components.sign_language_translator import SignLanguageTranslator
 from urllib.parse import urlparse
 
 
 class Evaluation:
     def __init__(self, config: EvaluationConfig):
         self.config = config
+        self.model = None
 
-    def load_model(self) -> torch.nn.Module:
-        model = SignLanguageTranslator(
-            cnn_model=models.resnet50(pretrained=False),
-            transformer_model=BertModel.from_pretrained('nlpaueb/bert-base-greek-uncased-v1'),
-            tokenizer_len=None
-        )
-        model.load_state_dict(torch.load(self.config.path_of_model))
-        model.eval()
-        return model
+    def load_data(self, csv_path):
+        df = pd.read_csv(csv_path)
 
-    def _test_loader(self):
-        transform = transforms.Compose([
-            transforms.Resize(self.config.params_image_size[:-1]),
-            transforms.ToTensor(),
-        ])
+        # Filter for the selected unique words
+        df = df[df['Gloss'].isin(df['Gloss'].unique()[:self.config.all_params['NUM_UNIQUE_WORDS']])]
 
-        test_dataset = datasets.ImageFolder(root=self.config.testing_data_dir, transform=transform)
-        return DataLoader(test_dataset, batch_size=self.config.params_batch_size, shuffle=False)
+        # Ensure we're selecting only one instance per word
+        df = df.groupby('Gloss').head(1).reset_index(drop=True)
 
-    def evaluation(self):
-        self.model = self.load_model()
-        test_loader = self._test_loader()
-        all_preds = []
-        all_labels = []
-        all_bleu_scores = []
+        data = []
+        labels = []
 
-        for images, labels in test_loader:
-            with torch.no_grad():
-                outputs = self.model(images)
-                _, preds = torch.max(outputs, 1)
-                all_preds.extend(preds.tolist())
-                all_labels.extend(labels.tolist())
+        for _, row in df.iterrows():
+            frames_path = os.path.join(self.config.root_dir, row['Path'])
+            frames = sorted([os.path.join(frames_path, img) for img in os.listdir(frames_path) if img.endswith('.jpg')])
 
-                # Calculate BLEU scores for the predictions
-                for i, pred in enumerate(preds):
-                    reference = [test_loader.dataset.classes[labels[i]]]
-                    candidate = [test_loader.dataset.classes[pred]]
-                    all_bleu_scores.append(sentence_bleu([reference], candidate))
+            sequence = []
+            for frame in frames:
+                image = tf.keras.preprocessing.image.load_img(frame, target_size=tuple(self.config.image_size[:-1]))
+                image = tf.keras.preprocessing.image.img_to_array(image)
+                image = tf.keras.applications.resnet.preprocess_input(image)
+                sequence.append(image)
 
-        accuracy = accuracy_score(all_labels, all_preds)
-        f1 = f1_score(all_labels, all_preds, average='weighted')
-        precision = precision_score(all_labels, all_preds, average='weighted')
-        recall = recall_score(all_labels, all_preds, average='weighted')
-        bleu_score_avg = sum(all_bleu_scores) / len(all_bleu_scores)
+            data.append(sequence)
+            labels.append(row['Gloss'])
 
-        self.scores = {
-            "accuracy": accuracy,
-            "f1_score": f1,
-            "precision": precision,
-            "recall": recall,
-            "bleu_score_avg": bleu_score_avg
+        # Pad sequences to ensure uniform shape
+        data = tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=self.config.max_seq_length, padding='post', dtype='float32')
+        labels = np.array(labels)
+
+        return data, labels
+
+    def encode_labels(self, labels):
+        label_encoder = LabelEncoder()
+        labels = label_encoder.fit_transform(labels)
+        labels = torch.tensor(labels)
+        labels = nn.functional.one_hot(labels, num_classes=len(np.unique(labels))).float()
+        return labels
+
+    def load_model(self, path: Path):
+        self.model = tf.keras.models.load_model(path)
+        # No need to call self.model.eval() in TensorFlow/Keras
+
+    def evaluate(self):
+        # Load and preprocess the data using TensorFlow/Keras
+        test_data, test_labels = self.load_data(self.config.test_csv)
+
+        # Encode labels using TensorFlow/Keras utilities
+        label_encoder = LabelEncoder()
+        test_labels = label_encoder.fit_transform(test_labels)
+        test_labels = tf.keras.utils.to_categorical(test_labels, num_classes=len(np.unique(test_labels)))
+
+        # Perform predictions using the Keras model
+        predictions = self.model.predict(test_data)
+
+        # Calculate loss and accuracy using TensorFlow/Keras
+        loss = tf.keras.losses.CategoricalCrossentropy()(test_labels, predictions)
+        accuracy = tf.keras.metrics.CategoricalAccuracy()(test_labels, predictions)
+
+        avg_loss = loss.numpy()
+        avg_accuracy = accuracy.numpy()
+
+        print(f'Test Loss: {avg_loss}, Test Accuracy: {avg_accuracy * 100:.2f}%')
+
+        return avg_loss, avg_accuracy
+
+
+    def save_score(self, avg_loss, avg_accuracy):
+        # Convert TensorFlow float32 to standard Python float
+        scores = {
+            "loss": float(avg_loss),  # Convert to float
+            "accuracy": float(avg_accuracy)  # Convert to float
         }
-        self.save_score()
+        save_json(path=Path("scores.json"), data=scores)
 
-    def save_score(self):
-        save_json(path=Path("scores.json"), data=self.scores)
 
-    def log_into_mlflow(self):
-        mlflow.set_registry_uri(self.config.mlflow_uri)
+    def log_into_mlflow(self, avg_loss, avg_accuracy):
+        dagshub.init(repo_owner=self.config.dagshub_username, repo_name=self.config.dagshub_repo_name, mlflow=True)
+        mlflow.set_tracking_uri(self.config.mlflow_uri)
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 
         with mlflow.start_run():
             mlflow.log_params(self.config.all_params)
-            mlflow.log_metrics(self.scores)
+            mlflow.log_metrics({"test_loss": avg_loss, "test_accuracy": avg_accuracy})
+
+            # Register the model if not using a file store
             if tracking_url_type_store != "file":
-                mlflow.pytorch.log_model(self.model, "model", registered_model_name="SignLanguageTranslatorModel")
+                mlflow.tensorflow.log_model(self.model, "model", registered_model_name="CNN_LSTM_Model")
             else:
-                mlflow.pytorch.log_model(self.model, "model")
+                mlflow.tensorflow.log_model(self.model, "model")

@@ -1,9 +1,6 @@
 from gslTranslater.config.configuration import ConfigurationManager
 from gslTranslater.components.model_evaluation_mlflow import Evaluation
 from gslTranslater import logger
-import dagshub
-
-dagshub.init(repo_owner='johndoe', repo_name='My-MLFlow-Repo-Name', mlflow=True)
 
 STAGE_NAME = "Model Evaluation Stage"
 
@@ -13,10 +10,12 @@ class EvaluationPipeline:
 
     def main(self):
         config = ConfigurationManager()
-        eval_config = config.get_evaluation_config()
-        evaluation = Evaluation(eval_config)
-        evaluation.evaluation()
-        evaluation.log_into_mlflow()
+        evaluation_config = config.get_evaluation_config()
+        model_evaluation = Evaluation(config=evaluation_config)
+        model_evaluation.load_model(evaluation_config.path_of_model)
+        avg_loss, avg_accuracy = model_evaluation.evaluate()
+        model_evaluation.save_score(avg_loss, avg_accuracy)
+        model_evaluation.log_into_mlflow(avg_loss, avg_accuracy)
 
 
     
