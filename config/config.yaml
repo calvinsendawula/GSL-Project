@@ -35,6 +35,6 @@ training:
   data_dir: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol
 
 evaluation:
-  mlflow_uri: replace-with-mlflow-uri
-  # Example of mlflow uri
-  # https://dagshub.com/johndoe/My-Sign-Language-Project.mlflow
+  mlflow_uri: https://dagshub.com/calvinsendawula/GSL-Project.mlflow
+  dagshub_username: calvinsendawula
+  dagshub_repo_name: GSL-Project
