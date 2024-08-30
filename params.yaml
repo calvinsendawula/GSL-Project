@@ -1,8 +1,16 @@
 AUGMENTATION: True
-IMAGE_SIZE: [224, 224, 3]
-BATCH_SIZE: 16
+IMAGE_SIZE: [144, 192, 3]
+BATCH_SIZE: 4
 INCLUDE_TOP: False
-EPOCHS: 10
+EPOCHS: 1
+CLASSES: 25
 WEIGHTS: imagenet
 LEARNING_RATE: 0.001
-POOLING: avg
+MAX_SEQ_LENGTH: 130
+NUM_UNIQUE_WORDS: 25
+
+# Data Ingestion Parameters
+MAX_INSTANCES_PER_CLASS: 10  # Maximum number of instances to randomly select per gloss
+TRAIN_SPLIT: 0.7  # Percentage of data to use for training
+TEST_SPLIT: 0.2   # Percentage of data to use for testing
+VALIDATE_SPLIT: 0.1  # Percentage of data to use for validation

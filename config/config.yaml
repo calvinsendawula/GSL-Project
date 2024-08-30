@@ -5,21 +5,34 @@ data_ingestion:
   source_URL: https://drive.google.com/file/d/1I7NNpDR3e1SIQbG1E_E93si1bclrKfuc/view?usp=sharing # GSL Isolated
   tar_dir: artifacts/data_ingestion/GSL_isolated.tar.gz
   unzip_dir: artifacts/data_ingestion/GSL_isolated
-  train_dir: artifacts/data_ingestion/GSL_isolated/Train
-  test_dir: artifacts/data_ingestion/GSL_isolated/Test
+  data_dir: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol
+  train_csv: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol/train_annotations.csv
+  test_csv: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol/test_annotations.csv
+  validate_csv: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol/validate_annotations.csv
+
+  csv_paths:
+    analysis_dir: artifacts/data_ingestion/GSL_Analysis
+    merged_csv: artifacts/data_ingestion/GSL_Analysis/merged_annotations.csv
+    confirmed_csv: artifacts/data_ingestion/GSL_Analysis/confirmed_annotations.csv
+    missing_csv: artifacts/data_ingestion/GSL_Analysis/missing_annotations.csv
+    gloss_distribution_csv: artifacts/data_ingestion/GSL_Analysis/gloss_distribution.csv
+    balanced_csv: artifacts/data_ingestion/GSL_Analysis/balanced_annotations.csv
+    summary_csv: artifacts/data_ingestion/GSL_Analysis/summary_selected_gloss.csv
+    frame_count_csv: artifacts/data_ingestion/GSL_Analysis/merged_with_frame_count.csv
+    analysis_txt: artifacts/data_ingestion/GSL_Analysis/dataset_analysis.txt
+
+  plot_paths:
+    root_dir: artifacts/data_ingestion/GSL_Analysis/plot_images
+    gloss_distribution_plot: artifacts/data_ingestion/GSL_Analysis/plot_images/gloss_distribution_plot.png
 
 prepare_base_model:
   root_dir: artifacts/prepare_base_model
-  cnn_model_path: artifacts/prepare_base_model/cnn_model.pth
-  transformer_model_path: artifacts/prepare_base_model/transformer_model.pth
-  tokenizer_path: artifacts/prepare_base_model/tokenizer
-  updated_model_path: artifacts/prepare_base_model/base_model_updated.pth
-  
+  cnn_lstm_model_path: artifacts/prepare_base_model/cnn_lstm_model.pth
+
 training:
   root_dir: artifacts/training
-  trained_model_path: artifacts/training/model.pth
-  training_data_dir: artifacts/data_ingestion/GSL_isolated/Train
-  testing_data_dir: artifacts/data_ingestion/GSL_isolated/Test
+  trained_model_path: artifacts/training/cnn_lstm_model_trained.pth
+  data_dir: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol
 
 evaluation:
   mlflow_uri: replace-with-mlflow-uri
