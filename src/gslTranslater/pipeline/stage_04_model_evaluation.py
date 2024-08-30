@@ -15,7 +15,7 @@ class EvaluationPipeline:
         model_evaluation.load_model(evaluation_config.path_of_model)
         avg_loss, avg_accuracy = model_evaluation.evaluate()
         model_evaluation.save_score(avg_loss, avg_accuracy)
-        model_evaluation.log_into_mlflow(avg_loss, avg_accuracy)
+        # model_evaluation.log_into_mlflow(avg_loss, avg_accuracy)
 
 
     

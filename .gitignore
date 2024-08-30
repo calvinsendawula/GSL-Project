@@ -166,3 +166,7 @@ doc/
 
 # Dataset folder
 artifacts/
+artifacts_V1/
+# folder for storing the artifacts
+artifacts_V2/
+artifacts copy/

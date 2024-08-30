@@ -1,0 +1,128 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/gslTranslater/pipeline/stage_01_data_ingestion.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 9b7a82b0f173e41c2ec59212af0c84f3
+      size: 2185
+    - path: src/gslTranslater/pipeline/stage_01_data_ingestion.py
+      hash: md5
+      md5: 4254020dc1301b900cbf3f343ce6d8e8
+      size: 1653
+    params:
+      params.yaml:
+        MAX_INSTANCES_PER_CLASS: 10
+        NUM_UNIQUE_WORDS: 25
+        TEST_SPLIT: 0.2
+        TRAIN_SPLIT: 0.7
+        VALIDATE_SPLIT: 0.1
+    outs:
+    - path: artifacts/data_ingestion/GSL_Analysis
+      hash: md5
+      md5: 7bd4439a2fcb1ff820f5075a446b61b4.dir
+      size: 190649
+      nfiles: 10
+    - path: artifacts/data_ingestion/GSL_isolated
+      hash: md5
+      md5: b1740fb4608b458845081d4b93196a0d.dir
+      size: 249845550
+      nfiles: 5921
+  prepare_base_model:
+    cmd: python src/gslTranslater/pipeline/stage_02_prepare_base_model.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 9b7a82b0f173e41c2ec59212af0c84f3
+      size: 2185
+    - path: src/gslTranslater/pipeline/stage_02_prepare_base_model.py
+      hash: md5
+      md5: 4bc883f9ee0fb13266fe68c0db69c56e
+      size: 952
+    params:
+      params.yaml:
+        CLASSES: 25
+        IMAGE_SIZE:
+        - 144
+        - 192
+        - 3
+        INCLUDE_TOP: false
+        LEARNING_RATE: 0.001
+        WEIGHTS: imagenet
+    outs:
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 732dad6f316f72022c8a435ae8c03200.dir
+      size: 127298524
+      nfiles: 5
+  training:
+    cmd: python src/gslTranslater/pipeline/stage_03_model_training.py
+    deps:
+    - path: artifacts/data_ingestion/GSL_isolated
+      hash: md5
+      md5: b1740fb4608b458845081d4b93196a0d.dir
+      size: 249845550
+      nfiles: 5921
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 732dad6f316f72022c8a435ae8c03200.dir
+      size: 127298524
+      nfiles: 5
+    - path: config/config.yaml
+      hash: md5
+      md5: 9b7a82b0f173e41c2ec59212af0c84f3
+      size: 2185
+    - path: src/gslTranslater/pipeline/stage_03_model_training.py
+      hash: md5
+      md5: e25ac4283605ce4747cbd190e042a49a
+      size: 848
+    params:
+      params.yaml:
+        AUGMENTATION: true
+        BATCH_SIZE: 4
+        EPOCHS: 1
+        IMAGE_SIZE:
+        - 144
+        - 192
+        - 3
+        MAX_SEQ_LENGTH: 130
+    outs:
+    - path: artifacts/training/cnn_lstm_model_trained.pth
+      hash: md5
+      md5: 7eaafb889d34dff8443ffd8d9d464f80.dir
+      size: 366191311
+      nfiles: 5
+  evaluation:
+    cmd: python src/gslTranslater/pipeline/stage_04_model_evaluation.py
+    deps:
+    - path: artifacts/data_ingestion/GSL_isolated
+      hash: md5
+      md5: b1740fb4608b458845081d4b93196a0d.dir
+      size: 249845550
+      nfiles: 5921
+    - path: artifacts/training/cnn_lstm_model_trained.pth
+      hash: md5
+      md5: 7eaafb889d34dff8443ffd8d9d464f80.dir
+      size: 366191311
+      nfiles: 5
+    - path: config/config.yaml
+      hash: md5
+      md5: 9b7a82b0f173e41c2ec59212af0c84f3
+      size: 2185
+    - path: src/gslTranslater/pipeline/stage_04_model_evaluation.py
+      hash: md5
+      md5: 510dc2292ce6e51fd7110381de54167c
+      size: 1106
+    params:
+      params.yaml:
+        BATCH_SIZE: 4
+        IMAGE_SIZE:
+        - 144
+        - 192
+        - 3
+    outs:
+    - path: scores.json
+      hash: md5
+      md5: fbc6d219a309d3bc2e92b98b300f6d10
+      size: 70

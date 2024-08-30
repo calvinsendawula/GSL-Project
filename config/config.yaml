@@ -2,7 +2,8 @@ artifacts_root: artifacts
 
 data_ingestion:
   root_dir: artifacts/data_ingestion
-  source_URL: https://drive.google.com/file/d/1I7NNpDR3e1SIQbG1E_E93si1bclrKfuc/view?usp=sharing # GSL Isolated
+  # source_URL: https://drive.google.com/file/d/1I7NNpDR3e1SIQbG1E_E93si1bclrKfuc/view?usp=sharing # GSL Isolated
+  source_URL: https://drive.google.com/file/d/1-Bf5UCLhM_ahXHy4RDfm5PcMly9lKX7_/view?usp=sharing
   tar_dir: artifacts/data_ingestion/GSL_isolated.tar.gz
   unzip_dir: artifacts/data_ingestion/GSL_isolated
   data_dir: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol
