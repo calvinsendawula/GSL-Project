@@ -2,8 +2,7 @@ artifacts_root: artifacts
 
 data_ingestion:
   root_dir: artifacts/data_ingestion
-  # source_URL: https://drive.google.com/file/d/1I7NNpDR3e1SIQbG1E_E93si1bclrKfuc/view?usp=sharing # GSL Isolated
-  source_URL: https://drive.google.com/file/d/1-Bf5UCLhM_ahXHy4RDfm5PcMly9lKX7_/view?usp=sharing
+  source_URL: dataset-URL # Replace before execution
   tar_dir: artifacts/data_ingestion/GSL_isolated.tar.gz
   unzip_dir: artifacts/data_ingestion/GSL_isolated
   data_dir: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol
@@ -36,6 +35,6 @@ training:
   data_dir: artifacts/data_ingestion/GSL_isolated/Greek_isolated/GSL_isol
 
 evaluation:
-  mlflow_uri: https://dagshub.com/calvinsendawula/GSL-Project.mlflow
-  dagshub_username: calvinsendawula
-  dagshub_repo_name: GSL-Project
+  mlflow_uri: https://dagshub.com/<username>/<repo-name>.mlflow # Replace before execution
+  dagshub_username: <username> # Replace before execution
+  dagshub_repo_name: <repo-name> # Replace before execution

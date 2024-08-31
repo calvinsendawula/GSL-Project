@@ -6,10 +6,10 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 __version__ = "0.0.0"
 
-REPO_NAME = "GSL-Project"
-AUTHOR_USER_NAME = "calvinsendawula"
+REPO_NAME = "<repo-name>"
+AUTHOR_USER_NAME = "<username>"
 SRC_REPO = "gslTranslater"
-AUTHOR_EMAIL = "calvinsendawula188@gmail.com"
+AUTHOR_EMAIL = "<email>"
 
 
 setuptools.setup(
@@ -17,7 +17,7 @@ setuptools.setup(
     version=__version__,
     author=AUTHOR_USER_NAME,
     author_email=AUTHOR_EMAIL,
-    description="A small python package for the GSL project",
+    description=f"A small python package for {REPO_NAME}",
     long_description=long_description,
     long_description_content="text/markdown",
     url=f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}",
