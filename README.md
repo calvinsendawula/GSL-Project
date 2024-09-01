@@ -4,7 +4,7 @@ A system to translate Greek Sign Language. This system uses CNN and LSTM as the 
 
 ## Videos Referenced in This Project
 
-The following videos provide context as you work through this documentation. The links to these videos are included later in the document when you will need to view them:
+The following videos provide context as you work through this documentation. Please watch them at 1.5x speed to save time as they are a bit long. The links to these videos are included later in the document when you will need to view them:
 
 1. **Video explaining the effects of the `params.yaml` file**: This video explains how changes to the `params.yaml` file affect the pipeline and model training.
 2. **Video explaining the use of DVC**: This video walks through the process and advantages of using DVC for managing and running the pipeline.
@@ -166,7 +166,7 @@ To view and run the pipeline stage by stage:
    - Select the virtual environment kernel.
    - Run all the cells in the first notebook (you will run the other notebooks later) and review the output in the final cell.
 
-5. Depending on the dataset you select, you may need to modify the `params.yaml` file in the project root directory. To make an informed decision, first review the contents of the newly created `artifacts/data_ingestion/GSL_Analysis` folder. Pay particular attention to the `dataset_analysis.txt` file and the plots in the `plot_images` directory. Watch this video [link to video] to understand how the parameters affect the rest of the project.
+5. Depending on the dataset you select, you may need to modify the `params.yaml` file in the project root directory. To make an informed decision, first review the contents of the newly created `artifacts/data_ingestion/GSL_Analysis` folder. Pay particular attention to the `dataset_analysis.txt` file and the plots in the `plot_images` directory. **Watch this [video](https://drive.google.com/file/d/1b6KvVEqclJ3-N4E6FNMM755FFCTUOqJV/view?usp=sharing) (at 1.5x speed) to understand how the parameters affect the rest of the project.**
 
 6. Once you’ve analyzed the data, update the `params.yaml` file based on your dataset choice:
 
@@ -216,7 +216,7 @@ To view and run the pipeline stage by stage:
 
 #### Option 2 - Running the Pipeline with DVC
 
-To see what happens when DVC is used, watch this video [link to video]
+To see what happens when DVC is used, **[watch this video](https://drive.google.com/file/d/1z0O1mEzzVNlyLGMG3DZM4wOlV6dO8jPZ/view?usp=sharing) Watch at 1.5x speed.**
 
 To run the pipeline with DVC:
 
@@ -271,8 +271,8 @@ This section regards the development process and can be ignored if your goal is 
 9. Update the dvc.yaml
 
 To understand these steps, watch these videos explaining the code structure.
- - [Video explaining the code (Notebooks)] [link to video]
- - [Video explaining the code (Pipeline and the rest of the code)] [link to video]
+ - **[Video explaining the code (Notebooks)](https://drive.google.com/file/d/1JvqtvaTa-uJdd4FKlxULNKP2QwjmbhyI/view?usp=sharing) Watch at 1.5x speed.**
+ - **[Video explaining the code (Pipeline and the rest of the code)](https://drive.google.com/file/d/1rxrVnjp6D45PhsRjXU7Kjj4lOALMxF7W/view?usp=sharing) Watch at 1.5x speed.**
  
 Follow these steps to ensure the project is properly configured and updated.
 
